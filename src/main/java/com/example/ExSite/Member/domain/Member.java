@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Getter
@@ -20,7 +21,7 @@ import java.util.List;
 public class Member extends BaseTimeEntity {
 
     @Id
-    @Column(name = "memberId")
+    @Column(name = "memberId", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -49,9 +50,6 @@ public class Member extends BaseTimeEntity {
     private List<MemberToStudy> studyList = new ArrayList<>();
 
 
-
-
-
     //TODO Builder 공부 필요
     @Builder
     public Member(String userId, String passwd, String name, String picture, Role role){
@@ -61,6 +59,21 @@ public class Member extends BaseTimeEntity {
         this.picture = picture;
         this.role = role;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return id.equals(member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
 
     public Member update(String name, String picture){
         this.name = name;

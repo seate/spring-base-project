@@ -1,12 +1,9 @@
 package com.example.ExSite.service;
 
-import com.example.ExSite.auth.Oauth2.Member.repository.JpaMemberRepository;
-import com.example.ExSite.auth.Oauth2.Member.service.MemberServiceImplement;
-
 class MemberServiceImplementTest {
 
-    MemberServiceImplement memberServiceImplement;
-    JpaMemberRepository memberRepository;
+    /*MemberServiceImplement memberServiceImplement;
+    JpaMemberRepository memberRepository;*/
 
     /*
     @BeforeEach
