@@ -1,0 +1,23 @@
+spring:
+    datasource:
+        url: jdbc:h2:tcp://localhost/~/test
+        driver-class-name: org.h2.Driver
+        username: sa
+
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: create-drop
+
+    profiles:
+        include: oauth
+
+    mvc:
+        servlet:
+            load-on-startup: 1 #처음에 dispatcher가 실행이 안 되는 현상?이 있어서 적음
+
+
+server:
+    servlet:
+        session:
+            tracking-modes: cookie #url에 JsessionId가 보이지 않게 하기 위해서

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        table {
+            width: 100%;
+            border: 1px solid #444444;
+        }
+        th, td {
+            border: 1px solid #444444;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>이름</th>
+                <th>현재 인원</th>
+                <th>최대 인원</th>
+                <th>목표</th>
+                <th>세부 내용</th>
+                <th>membertostudylist</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="study : ${studies}">
+                <td th:text="${study.id}"></td>
+                <td th:text="${study.name}"></td>
+                <td th:text="${study.curUserCount}"></td>
+                <td th:text="${study.maxUserCount}"></td>
+                <td th:text="${study.goal}"></td>
+                <td th:text="${study.details}"></td>
+                <td th:list="${study.getMemberToStudyList()}"></td>
+
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div> <!-- /container -->
+</body>
+</html>
