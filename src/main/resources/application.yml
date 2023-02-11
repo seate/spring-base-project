@@ -16,8 +16,17 @@ spring:
         servlet:
             load-on-startup: 1 #처음에 dispatcher가 실행이 안 되는 현상?이 있어서 적음
 
+    rabbitmq:
+        username: guest
+        password: guest
+        host: localhost
+        port: 5672
+
+
 
 server:
     servlet:
         session:
             tracking-modes: cookie #url에 JsessionId가 보이지 않게 하기 위해서
+
+    port: 8080

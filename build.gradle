@@ -40,6 +40,22 @@ dependencies {
 
 	// WebClient
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	//================================chatting에 필요한 라이브러리================================
+
+	//외부 브로커를 사용하기 위해서
+	implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
+
+	//jackson2json에서 LocalDateTime을 handling 하기 위해
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+
+	implementation 'org.webjars:sockjs-client:1.0.2'
+	implementation 'org.webjars:stomp-websocket:2.3.3'
+
 }
 
 tasks.named('test') {
