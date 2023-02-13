@@ -7,7 +7,6 @@ import java.util.concurrent.CountDownLatch;
 
 @Component
 public class Receiver {
-
     private CountDownLatch latch = new CountDownLatch(1);
 
     public void receiveMessage(ChatDTO chat) {
@@ -20,9 +19,8 @@ public class Receiver {
         return latch;
     }
 
-    private final static String CHAT_QUEUE_NAME = "chat.queue";
-
     /*//receive()는 단순히 큐에 들어온 메세지를 소비만 한다. (현재는 디버그용도)
+    private final static String CHAT_QUEUE_NAME = "chat.queue";
     @RabbitListener(queues = CHAT_QUEUE_NAME)
     public void receive(final Message message) {
         //System.out.println("received: " + chat.getMessage());

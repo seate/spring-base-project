@@ -8,6 +8,8 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDateTime;
+
 @Controller
 @RequiredArgsConstructor
 @Log4j2
@@ -19,7 +21,7 @@ public class StompRabbitController {
 
     @MessageMapping("chat.enter.{chatRoomId}")
     public void enter(ChatDTO chat, @DestinationVariable String chatRoomId) {
-        //chat.setRegDate(LocalDateTime.now());
+        chat.setRegDate(LocalDateTime.now());
         chat.setMessage("입장하셨습니다.");
         chat.setChatRoomId(Long.parseLong(chatRoomId));
 
@@ -30,7 +32,7 @@ public class StompRabbitController {
 
     @MessageMapping("chat.message.{chatRoomId}")
     public void send(ChatDTO chat, @DestinationVariable String chatRoomId) {
-        //chat.setRegDate(LocalDateTime.now());
+        chat.setRegDate(LocalDateTime.now());
         chat.setChatRoomId(Long.parseLong(chatRoomId));
 
         template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + chatRoomId, chat);

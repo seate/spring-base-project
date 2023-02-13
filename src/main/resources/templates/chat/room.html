@@ -118,7 +118,6 @@
         messageContent.value = '';
 
         stomp.send(`/pub/chat.message.${chatRoomId}`, {}, JSON.stringify({
-
             message: message,
             memberId: 1,
             nickname: nickname

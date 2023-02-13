@@ -1,7 +1,11 @@
 package com.example.ExSite.Chatting.dto;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +21,6 @@ public class ChatDTO {
     private String message;
     private String region;
 
-    /*@JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDateTime regDate;*/
-
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime regDate;
 }
