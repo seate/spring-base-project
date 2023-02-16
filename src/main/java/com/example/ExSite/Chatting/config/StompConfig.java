@@ -24,7 +24,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
         registry.setPathMatcher(new AntPathMatcher(".")); // url을 chat/room/3 -> chat.room.3으로 참조하기 위한 설정
         registry.setApplicationDestinationPrefixes("/pub");
 
-        //registry.enableSimpleBroker("/sub");
+        //registry.enableSimpleBroker("/sub"); //rabbitmq를 사용하지 않을 경우
         registry.enableStompBrokerRelay("/queue", "/topic", "/exchange", "/amq/queue");
     }
 }

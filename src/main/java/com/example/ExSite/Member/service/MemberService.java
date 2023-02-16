@@ -15,4 +15,7 @@ public interface MemberService extends OAuth2UserService<OAuth2UserRequest, OAut
     Member saveOrUpdate(OAuthAttributes attributes);
     Long withdraw(Member member);
     List<Member> findMembers();
+
+    Member findByUserId(String userId);
+    public Long findIdByToken(Object isToken);
 }

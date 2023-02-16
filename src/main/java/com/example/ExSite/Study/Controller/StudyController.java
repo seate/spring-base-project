@@ -4,6 +4,7 @@ import com.example.ExSite.Member.domain.GeneralMember;
 import com.example.ExSite.Study.domain.Study;
 import com.example.ExSite.Study.service.StudyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -70,6 +71,7 @@ public class StudyController {
 
 
     @GetMapping("/study/list")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String studyList(Model model) {
         List<Study> list = studyService.list();
         model.addAttribute("studies", list);

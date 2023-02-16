@@ -104,8 +104,8 @@
         //입장 메세지 전송
 
         stomp.send(`/pub/chat.enter.${chatRoomId}`, {}, JSON.stringify({
-            memberId: 1,
-            nickname: nickname
+            memberId: 1/*,
+            nickname: nickname*/
         }));
 
     }, onError, '/');
@@ -119,8 +119,8 @@
 
         stomp.send(`/pub/chat.message.${chatRoomId}`, {}, JSON.stringify({
             message: message,
-            memberId: 1,
-            nickname: nickname
+            memberId: 1/*,
+            nickname: nickname*/
         }));
     });
 </script>

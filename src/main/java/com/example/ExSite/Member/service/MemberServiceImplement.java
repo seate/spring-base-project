@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -127,12 +128,37 @@ public class MemberServiceImplement implements MemberService {
 
     //READ
 
-    public List<Member> findMembers(){
-        return memberRepository.findAll();
-    }
-
     public Optional<Member> findOne(Long memberId){
         return memberRepository.findById(memberId);
+    }
+
+    public Member findByUserId(String userId) {
+        Optional<Member> findMember = memberRepository.findByUserId(userId);
+        if (!findMember.isPresent()) {
+            try {
+                throw new Exception("찾으려는 member가 없습니다.");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return findMember.get();
+    }
+
+    public Long findIdByToken(Object isToken) {
+        if (!(isToken instanceof OAuth2AuthenticationToken)){
+            try {
+                throw new Exception("토큰이 OAuth2토큰의 요소가 아닙니다.");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) isToken;
+        return findByUserId(token.getPrincipal().getAttribute("email")).getId();
+    }
+
+    public List<Member> findMembers(){
+        return memberRepository.findAll();
     }
 
     public List<Study> findMyStudies(Member member) {

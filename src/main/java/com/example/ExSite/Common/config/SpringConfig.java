@@ -1,5 +1,6 @@
 package com.example.ExSite.Common.config;
 
+import com.example.ExSite.Chatting.Repository.ChatRepository;
 import com.example.ExSite.Member.repository.JpaMemberRepository;
 import com.example.ExSite.Member.repository.MemberRepository;
 import com.example.ExSite.MemberToStudy.repository.JpaMemberToStudyRepository;
@@ -42,5 +43,10 @@ public class SpringConfig {
     @Bean
     public StudyRepository studyRepository() {
         return new JpaStudyRepository(em);
+    }
+
+    @Bean
+    public ChatRepository chatRepository() {
+        return new ChatRepository(em);
     }
 }

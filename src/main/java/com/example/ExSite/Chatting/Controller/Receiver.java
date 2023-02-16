@@ -1,17 +1,23 @@
 package com.example.ExSite.Chatting.Controller;
 
-import com.example.ExSite.Chatting.dto.ChatDTO;
+import com.example.ExSite.Chatting.Service.ChatService;
+import com.example.ExSite.Chatting.domain.Chat;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CountDownLatch;
 
 @Component
 public class Receiver {
+
+    private final ChatService chatService;
     private CountDownLatch latch = new CountDownLatch(1);
 
-    public void receiveMessage(ChatDTO chat) {
-        System.out.println("sender: " + chat.getNickname());
-        System.out.println("Received: " + chat.getMessage());
+    public Receiver(ChatService chatService) {
+        this.chatService = chatService;
+    }
+
+    public void receiveMessage(Chat chat) {
+        chatService.saveChatting(chat);
         latch.countDown();
     }
 
