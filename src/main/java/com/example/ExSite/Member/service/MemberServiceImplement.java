@@ -4,8 +4,7 @@ import com.example.ExSite.Member.domain.GeneralMember;
 import com.example.ExSite.Member.domain.Member;
 import com.example.ExSite.Member.dto.OAuthAttributes;
 import com.example.ExSite.Member.repository.MemberRepository;
-import com.example.ExSite.MemberToStudy.service.MemberToStudyService;
-import com.example.ExSite.Study.domain.Study;
+import com.example.ExSite.Study.service.StudyService;
 import jakarta.servlet.http.HttpSession;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -31,13 +30,13 @@ import java.util.Optional;
 public class MemberServiceImplement implements MemberService {
 
     private final MemberRepository memberRepository;
-    private final MemberToStudyService memberToStudyService;
+    private final StudyService studyService;
     private final HttpSession httpSession;
 
     @Autowired
-    public MemberServiceImplement(MemberRepository memberRepository, MemberToStudyService memberToStudyService, HttpSession httpSession) {
+    public MemberServiceImplement(MemberRepository memberRepository, StudyService studyService, HttpSession httpSession) {
         this.memberRepository = memberRepository;
-        this.memberToStudyService = memberToStudyService;
+        this.studyService = studyService;
         this.httpSession = httpSession;
     }
 
@@ -98,7 +97,7 @@ public class MemberServiceImplement implements MemberService {
 
                     //이 멤버가 지워졌을 때의 study 등의 처리
                     try {
-                        memberToStudyService.memberDeleted(member1);
+                        studyService.memberDeleted(member1);
                     }
                     catch (Exception e) {
                         throw new RuntimeException(e);
@@ -161,7 +160,4 @@ public class MemberServiceImplement implements MemberService {
         return memberRepository.findAll();
     }
 
-    public List<Study> findMyStudies(Member member) {
-        return memberToStudyService.findMembersStudies(member);
-    }
 }

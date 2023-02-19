@@ -4,10 +4,7 @@ import com.example.ExSite.Common.domain.BaseTimeEntity;
 import com.example.ExSite.Member.domain.Member;
 import com.example.ExSite.MemberToStudy.domain.MemberToStudy;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +47,7 @@ public class Study extends BaseTimeEntity {
 
 
     //TODO study에 chatting room 추가
+
 
 
     @Builder
