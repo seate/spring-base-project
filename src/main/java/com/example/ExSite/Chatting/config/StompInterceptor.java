@@ -37,7 +37,7 @@ public class StompInterceptor implements ChannelInterceptor {
         String destination = accessor.getDestination();
         long studyId = Long.parseLong(destination.substring(destination.lastIndexOf('.') + 1, destination.length()));
 
-        OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) accessor.getHeader("simpUser");
+        OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) accessor.getUser();
         Member member = ((GeneralMember) token.getPrincipal()).getMember();
 
         return studyService.isContained(studyId, member);
