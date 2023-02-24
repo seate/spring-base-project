@@ -21,15 +21,15 @@ public class JpaMemberToStudyRepository implements MemberToStudyRepository {
 
     //CREATE
 
-    public void saveMemberToStudy(Member member, Study study) {
-        em.persist(new MemberToStudy(member, study));
+    public void saveMemberToStudy(Member member, Study study, boolean approved) {
+        em.persist(new MemberToStudy(member, study, approved));
     }
 
 
     //DELETE
 
-    public Optional<MemberToStudy> deleteMemberToStudy(Member member, Study study) {
-        Optional<MemberToStudy> findMemberToStudy = findById(new MemberToStudy(member, study).getId());
+    public Optional<MemberToStudy> deleteMemberToStudy(Member member, Study study, boolean approved) {
+        Optional<MemberToStudy> findMemberToStudy = findById(new MemberToStudy(member, study, approved).getId());
         findMemberToStudy.ifPresent(memberToStudy1 -> em.remove(memberToStudy1));
 
         return findMemberToStudy;
@@ -47,22 +47,34 @@ public class JpaMemberToStudyRepository implements MemberToStudyRepository {
         return Optional.ofNullable(memberToStudy);
     }
 
-    public List<Member> findMembersByStudy(Study study) {
-        return em.createQuery("select m from MemberToStudy m where m.study = :study", MemberToStudy.class)
-                .setParameter("study", study).getResultStream()
+    public List<Member> findMembersByStudy(Study study, boolean approved) {
+        return em.createQuery("select m from MemberToStudy m where m.study = :study and m.approved = :approved", MemberToStudy.class)
+                .setParameter("study", study)
+                .setParameter("approved", approved)
+                .getResultStream()
                 .map(MemberToStudy::getMember).collect(Collectors.toList());
     }
 
-    public List<Study> findStudiesByMember(Member member) {
-        return em.createQuery("select s from MemberToStudy s where s.member = :member", MemberToStudy.class)
-                .setParameter("member", member).getResultStream()
+    public List<Study> findStudiesByMember(Member member, boolean approved) {
+        return em.createQuery("select s from MemberToStudy s where s.member = :member and s.approved = :approved", MemberToStudy.class)
+                .setParameter("member", member)
+                .setParameter("approved", approved)
+                .getResultStream()
                 .map(MemberToStudy::getStudy).collect(Collectors.toList());
     }
 
-    public Optional<MemberToStudy> findByMemberAndStudy(Member member, Study study) {
-        return em.createQuery("select ms from MemberToStudy ms where ms.member = : member and ms.study = : study", MemberToStudy.class)
+    public Optional<MemberToStudy> findByMemberAndStudy(Member member, Study study, boolean approved) {
+        return em.createQuery("select ms from MemberToStudy ms where ms.member = :member and ms.study = :study and ms.approved = :approved", MemberToStudy.class)
                 .setParameter("member", member)
                 .setParameter("study", study)
+                .setParameter("approved", approved)
                 .getResultStream().findAny();
+    }
+
+    public List<MemberToStudy> findRequestsByStudy(Study study) {
+        return em.createQuery("select ms from MemberToStudy ms where ms.study = :study and ms.approved = :approved", MemberToStudy.class)
+                .setParameter("study", study)
+                .setParameter("approved", false)
+                .getResultList();
     }
 }

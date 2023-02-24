@@ -12,7 +12,7 @@ public class RedisUtil {
     private final String keyword = "searchRanking";
 
     public void addScore(String searchWord) {
-        if (!redisTemplate.opsForZSet().addIfAbsent(keyword, searchWord, 1)){
+        if (Boolean.TRUE.equals(redisTemplate.opsForZSet().addIfAbsent(keyword, searchWord, 1))){
             redisTemplate.opsForZSet().incrementScore(keyword, searchWord, 1);
         }
     }

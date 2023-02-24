@@ -46,9 +46,6 @@ public class Study extends BaseTimeEntity {
 
 
 
-    //TODO study에 chatting room 추가
-
-
 
     @Builder
     public Study(String name, int maxUserCount, String goal, String details, Member leader) {

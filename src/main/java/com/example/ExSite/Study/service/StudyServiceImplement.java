@@ -39,7 +39,7 @@ public class StudyServiceImplement implements StudyService {
         studyRepository.saveStudy(study);
 
         try {
-            memberToStudyService.joinToStudy(leader, study);
+            memberToStudyService.joinStudy(leader, study, true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -64,7 +64,7 @@ public class StudyServiceImplement implements StudyService {
     //member가 지워졌을 때와 study가 지워졌을 때는 membertostudy를 지우는 건 on delete cascade로 대체함
     public void memberDeleted(Member member) {
 
-        for (Study study : memberToStudyService.findMembersStudies(member)) {
+        for (Study study : memberToStudyService.findStudiesByMember(member)) {
             if (study.getCurUserCount() == 1) { //이 멤버만 있는 스터디가 있으면
                 //study 삭제는 study의 leader가 삭제되면 on delete cascade로 알아서 삭제됨
                 //memberToStudy 삭제는 스터디 삭제하면 on delete cascade로 알아서 삭제됨
@@ -75,7 +75,7 @@ public class StudyServiceImplement implements StudyService {
                             //스터디의 멤버들 중에
                             study.getMemberToStudyList().stream()
                                     // 삭제하려는 member가 아닌 아무나
-                                    .filter(memberToStudy -> memberToStudy.getMember().equals(member)).findAny();
+                                    .filter(memberToStudy -> !memberToStudy.getMember().equals(member)).findAny();
 
 
                     if (!nextLeadersMemberToStudy.isPresent()) {
@@ -92,7 +92,7 @@ public class StudyServiceImplement implements StudyService {
 
                 //이 멤버가 들어가 있는 스터디에서 탈퇴 처리
                 try {
-                    memberToStudyService.DisjoinFromStudy(member, study);
+                    memberToStudyService.disjoinStudy(member, study, true);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -126,6 +126,8 @@ public class StudyServiceImplement implements StudyService {
                 .stream().map(MemberToStudy::getMember)
                 .anyMatch(member1 -> member1.equals(member));
     }
+
+
 
     //UPDATE
 

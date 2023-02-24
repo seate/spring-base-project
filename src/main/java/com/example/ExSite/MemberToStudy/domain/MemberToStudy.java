@@ -26,9 +26,14 @@ public class MemberToStudy extends BaseTimeEntity {
     @JoinColumn(name = "studyId")
     private Study study;
 
-    public MemberToStudy(Member member, Study study) {
+    @Column(nullable = false)
+    private boolean approved;
+
+
+    public MemberToStudy(Member member, Study study, boolean approved) {
         this.member = member;
         this.study = study;
+        this.approved = approved;
     }
 
     @Override
