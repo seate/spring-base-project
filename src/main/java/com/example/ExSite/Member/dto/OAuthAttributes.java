@@ -26,7 +26,10 @@ public class OAuthAttributes {
 
     //현재는 구글만 가능함
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-        return ofGoogle(userNameAttributeName, attributes);
+        if (registrationId.equals("google")) return ofGoogle(userNameAttributeName, attributes);
+        else if (registrationId.equals("kakao")) return ofKakao(userNameAttributeName, attributes);
+
+        return null;
     }
 
     public static OAuthAttributes ofGoogle(String userNameAttributesName, Map<String, Object> attributes){
@@ -36,6 +39,18 @@ public class OAuthAttributes {
                 .picture((String) attributes.get("picture"))
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributesName)
+                .build();
+    }
+
+    public static OAuthAttributes ofKakao(String userNameAttributesName, Map<String, Object> attributes) {
+        Map<String, Object> kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
+        Map<String, Object> kakaoProfile = (Map<String, Object>)kakaoAccount.get("profile");
+
+        return OAuthAttributes.builder()
+                .name((String) kakaoProfile.get("nickname"))
+                .email((String) kakaoAccount.get("email"))
+                .nameAttributeKey(userNameAttributesName)
+                .attributes(attributes)
                 .build();
     }
 

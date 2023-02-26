@@ -44,7 +44,6 @@ public class MemberServiceImplement implements MemberService {
 
     @Override // OAuth2에서 로그인을 담당
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
@@ -133,7 +132,7 @@ public class MemberServiceImplement implements MemberService {
 
     public Member findByUserId(String userId) {
         Optional<Member> findMember = memberRepository.findByUserId(userId);
-        if (!findMember.isPresent()) {
+        if (findMember.isEmpty()) {
             try {
                 throw new Exception("찾으려는 member가 없습니다.");
             } catch (Exception e) {

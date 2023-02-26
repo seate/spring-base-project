@@ -21,12 +21,10 @@ public class JpaMemberRepository implements MemberRepository {
     }
 
     @Override
-    //TODO study에서 삭제된 멤버를 전부 탈퇴시켜야함
     public Optional<Member> delete(Member member) {
         Optional<Member> findMember = findById(member.getId());
 
         findMember.ifPresent(member1 -> {
-
             em.remove(member1);
         });
 
@@ -60,5 +58,5 @@ public class JpaMemberRepository implements MemberRepository {
     }
 
 
-    //TODO update는 service단에서 saveOrUpdate로 해결하는 듯 일관성을 위해 고쳐야 하나
+    //update는 service단에서 saveOrUpdate로 해결
 }

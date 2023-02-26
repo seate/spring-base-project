@@ -2,7 +2,6 @@ package com.example.ExSite.Controller;
 
 
 import org.junit.Test;
-import org.junit.jupiter.api.TestTemplate;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)//TODO junit4 설치한 듯 지워야하?나?
+@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class HomeControllerTest {
 

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class RedisUtil {
@@ -17,8 +19,7 @@ public class RedisUtil {
         }
     }
 
-    public void getRanking() {
-        //TODO ranking return 고치기
-        System.out.println(redisTemplate.opsForZSet().reverseRange(keyword, 0, 10));
+    public Set<String> getRanking() {
+        return redisTemplate.opsForZSet().reverseRange(keyword, 0, 10);
     }
 }
