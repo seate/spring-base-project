@@ -1,13 +1,12 @@
 package com.example.ExSite.MemberToStudy.repository;
 
-import com.example.ExSite.Member.domain.Member;
+import com.example.ExSite.Member.dto.MemberRequestDTO;
 import com.example.ExSite.MemberToStudy.domain.MemberToStudy;
-import com.example.ExSite.Study.domain.Study;
+import com.example.ExSite.Study.dto.StudyRequestDTO;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 public class JpaMemberToStudyRepository implements MemberToStudyRepository {
@@ -18,25 +17,23 @@ public class JpaMemberToStudyRepository implements MemberToStudyRepository {
         this.em = em;
     }
 
-
     //CREATE
 
-    public void saveMemberToStudy(Member member, Study study, boolean approved) {
-        em.persist(new MemberToStudy(member, study, approved));
+    public void saveMemberToStudy(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO, boolean approved) {
+        findByMemberAndStudy(memberRequestDTO, studyRequestDTO, approved);
+        em.persist(new MemberToStudy(memberRequestDTO.toEntity(), studyRequestDTO.toEntity(), approved));
     }
 
 
     //DELETE
 
-    public Optional<MemberToStudy> deleteMemberToStudy(Member member, Study study, boolean approved) {
-        Optional<MemberToStudy> findMemberToStudy = findById(new MemberToStudy(member, study, approved).getId());
-        findMemberToStudy.ifPresent(memberToStudy1 -> em.remove(memberToStudy1));
-
-        return findMemberToStudy;
+    public void deleteMemberToStudy(MemberToStudy memberToStudy) {
+        em.remove(memberToStudy);
     }
 
-    public void AllMemberDisjoinFromStudy(Study study) {
-        em.createQuery("delete from MemberToStudy where Study = :study").setParameter("study", study);
+    public void AllMemberDisjoinFromStudy(StudyRequestDTO studyRequestDTO) {
+        em.createQuery("delete from MemberToStudy where Study = :study")
+                .setParameter("study", studyRequestDTO.toEntity());
     }
 
 
@@ -47,34 +44,28 @@ public class JpaMemberToStudyRepository implements MemberToStudyRepository {
         return Optional.ofNullable(memberToStudy);
     }
 
-    public List<Member> findMembersByStudy(Study study, boolean approved) {
+    public List<MemberToStudy> findByStudy(StudyRequestDTO studyRequestDTO, boolean approved) {
         return em.createQuery("select m from MemberToStudy m where m.study = :study and m.approved = :approved", MemberToStudy.class)
-                .setParameter("study", study)
+                .setParameter("study", studyRequestDTO.toEntity())
                 .setParameter("approved", approved)
-                .getResultStream()
-                .map(MemberToStudy::getMember).collect(Collectors.toList());
+                .getResultList();
     }
 
-    public List<Study> findStudiesByMember(Member member, boolean approved) {
+
+
+    @Override
+    public List<MemberToStudy> findByMember(MemberRequestDTO memberRequestDTO, boolean approved) {
         return em.createQuery("select s from MemberToStudy s where s.member = :member and s.approved = :approved", MemberToStudy.class)
-                .setParameter("member", member)
+                .setParameter("member", memberRequestDTO.toEntity())
                 .setParameter("approved", approved)
-                .getResultStream()
-                .map(MemberToStudy::getStudy).collect(Collectors.toList());
+                .getResultList();
     }
 
-    public Optional<MemberToStudy> findByMemberAndStudy(Member member, Study study, boolean approved) {
+    public Optional<MemberToStudy> findByMemberAndStudy(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO, boolean approved) {
         return em.createQuery("select ms from MemberToStudy ms where ms.member = :member and ms.study = :study and ms.approved = :approved", MemberToStudy.class)
-                .setParameter("member", member)
-                .setParameter("study", study)
+                .setParameter("member", memberRequestDTO.toEntity())
+                .setParameter("study", studyRequestDTO.toEntity())
                 .setParameter("approved", approved)
                 .getResultStream().findAny();
-    }
-
-    public List<MemberToStudy> findRequestsByStudy(Study study) {
-        return em.createQuery("select ms from MemberToStudy ms where ms.study = :study and ms.approved = :approved", MemberToStudy.class)
-                .setParameter("study", study)
-                .setParameter("approved", false)
-                .getResultList();
     }
 }

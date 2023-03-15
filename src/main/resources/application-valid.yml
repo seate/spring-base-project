@@ -1,0 +1,3 @@
+study:
+    MinUserCount: 2
+    MaxUserCount: 10

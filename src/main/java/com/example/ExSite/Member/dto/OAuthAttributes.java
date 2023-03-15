@@ -12,6 +12,7 @@ public class OAuthAttributes {
     private Map<String, Object> attributes;
     private String nameAttributeKey;
     private String name;
+
     private String email;
     private String picture;
 
@@ -24,12 +25,14 @@ public class OAuthAttributes {
         this.picture = picture;
     }
 
-    //현재는 구글만 가능함
-    public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-        if (registrationId.equals("google")) return ofGoogle(userNameAttributeName, attributes);
-        else if (registrationId.equals("kakao")) return ofKakao(userNameAttributeName, attributes);
 
-        return null;
+    public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
+        return switch (registrationId) {
+            case "google" -> ofGoogle(userNameAttributeName, attributes);
+            case "kakao" -> ofKakao(userNameAttributeName, attributes);
+            //case "naver" -> ofNaver(userNameAttributeName, attributes);
+            default -> null;
+        };
     }
 
     public static OAuthAttributes ofGoogle(String userNameAttributesName, Map<String, Object> attributes){
@@ -53,6 +56,19 @@ public class OAuthAttributes {
                 .attributes(attributes)
                 .build();
     }
+
+    //에러 개쩔어
+    /*public static OAuthAttributes ofNaver(String userNameAttributesName, Map<String, Object> attributes) {
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        return OAuthAttributes.builder()
+                .name((String) response.get("name"))
+                .email((String) response.get("email"))
+                .picture((String) response.get("profile_image"))
+                .attributes(response)
+                .nameAttributeKey(userNameAttributesName)
+                .build();
+    }*/
 
     public Member toEntity(){
         return Member.builder()

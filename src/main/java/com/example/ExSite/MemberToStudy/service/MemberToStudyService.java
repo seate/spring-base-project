@@ -1,14 +1,15 @@
 package com.example.ExSite.MemberToStudy.service;
 
-import com.example.ExSite.Member.domain.Member;
+import com.example.ExSite.Member.dto.MemberRequestDTO;
 import com.example.ExSite.MemberToStudy.domain.MemberToStudy;
 import com.example.ExSite.MemberToStudy.repository.MemberToStudyRepository;
-import com.example.ExSite.Study.domain.Study;
+import com.example.ExSite.Study.dto.StudyRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -17,59 +18,78 @@ public class MemberToStudyService {
 
     private final MemberToStudyRepository memberToStudyRepository;
 
+
     //CREATE
 
-    public void joinStudy(Member member, Study study, boolean approved) throws Exception {
+    public StudyRequestDTO requestJoinStudy(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO) {
+        return joinStudy(memberRequestDTO, studyRequestDTO, false);
+    }
+
+    public StudyRequestDTO approveJoinStudy(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO) {
+        return joinStudy(memberRequestDTO, studyRequestDTO, true);
+    }
+
+    private StudyRequestDTO joinStudy(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO, boolean approved) {
         //가입 요청: approved = false
         //가입을 수락: approved = true
 
-        if (memberToStudyRepository.findByMemberAndStudy(member, study, approved).isPresent()) {
-            throw new Exception("이미 생성된 MemberToStudy입니다.");
-        }
+        if (memberToStudyRepository.findByMemberAndStudy(memberRequestDTO, studyRequestDTO, approved).isPresent())
+            throw new RuntimeException("이미 생성된 MemberToStudy입니다.");
 
-        if (approved){ //승인하는 join이면
+        if (approved) { //승인하는 join이면
             //study의 curUserCount update
-            if (study.getCurUserCount() + 1 > study.getMaxUserCount()) {
-                throw new Exception("member가 추가되려는 study의 최대 인원보다 많습니다.");
-            }
-            study.setCurUserCount(study.getCurUserCount() + 1);
+            if (studyRequestDTO.getCurUserCount() + 1 > studyRequestDTO.getMaxUserCount())
+                throw new RuntimeException("member가 추가되려는 study의 최대 인원보다 많습니다.");
+
+            studyRequestDTO.setCurUserCount(studyRequestDTO.getCurUserCount() + 1); //TODO 문제 이빠이
         }
 
-        memberToStudyRepository.saveMemberToStudy(member, study, approved);
+        memberToStudyRepository.saveMemberToStudy(memberRequestDTO, studyRequestDTO, approved);
+        return studyRequestDTO;
     }
 
-    //DELETE
 
-    public void disjoinStudy(Member member, Study study, boolean approved) throws Exception {
+
+    //DELETE
+    public StudyRequestDTO rejectRequest(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO) {
+        return disjoinStudy(memberRequestDTO, studyRequestDTO, false);
+    }
+
+    public StudyRequestDTO withdrawMember(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO) {
+        return disjoinStudy(memberRequestDTO, studyRequestDTO, true);
+    }
+
+
+
+    private StudyRequestDTO disjoinStudy(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO, boolean approved) {
         //가입 요청을 거절: approved = false
         //가입된 member의 탈퇴: approved = true
+        Optional<MemberToStudy> byMemberAndStudy = memberToStudyRepository.findByMemberAndStudy(memberRequestDTO, studyRequestDTO, approved);
 
-        if (!memberToStudyRepository.findByMemberAndStudy(member, study, approved).isPresent()) {
-            throw new Exception("지우려는 MemberToStudy가 없습니다.");
-        }
+        if (byMemberAndStudy.isEmpty()) throw new RuntimeException("지우려는 MemberToStudy가 없습니다.");
 
-        if (approved){
+        if (approved) {
             //study의 curUserCount update
-            if (study.getCurUserCount() == 1) {
-                throw new Exception("탈퇴하려는 study의 현재 인원이 1명입니다.");
-            }
-            study.setCurUserCount(study.getCurUserCount() - 1);
+            if (studyRequestDTO.getCurUserCount() == 1) throw new RuntimeException("탈퇴하려는 study의 현재 인원이 1명입니다.");
+            studyRequestDTO.setCurUserCount(studyRequestDTO.getCurUserCount() - 1); //TODO 여기 문제 이빠이
         }
 
-        memberToStudyRepository.deleteMemberToStudy(member, study, approved);
+        memberToStudyRepository.deleteMemberToStudy(byMemberAndStudy.get());
+        return studyRequestDTO;
     }
 
     //READ
-    public List<Study> findStudiesByMember(Member member) {
-        return memberToStudyRepository.findStudiesByMember(member, true);
+    public List<MemberToStudy> findStudiesByMember(MemberRequestDTO memberRequestDTO) {
+        return memberToStudyRepository.findByMember(memberRequestDTO, true);
     }
 
-    public List<Member> findMembersByStudy(Study study) {
-        return memberToStudyRepository.findMembersByStudy(study, true);
+    public List<MemberToStudy> findMembersByStudy(StudyRequestDTO studyRequestDTO) {
+        return memberToStudyRepository.findByStudy(studyRequestDTO, true);
     }
 
-    public List<MemberToStudy> findStudiesRequest(Study study) {
-        return memberToStudyRepository.findRequestsByStudy(study);
+
+    public Optional<MemberToStudy> findByMemberAndStudy(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO, boolean approved) {
+        return memberToStudyRepository.findByMemberAndStudy(memberRequestDTO, studyRequestDTO, approved);
     }
 
 

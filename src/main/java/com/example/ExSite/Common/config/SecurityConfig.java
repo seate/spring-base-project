@@ -68,8 +68,8 @@ public class SecurityConfig {
                 .usernameParameter("userId") // username을 userId로 지정
                 .passwordParameter("passwd") // password를 passwd로 지정
                 .loginProcessingUrl("/loginProc") //TODO 로그인 처리 페이지를 지정할 때 사용, 고쳐야함
-                .defaultSuccessUrl("/") // 로그인에 성공했을 때 기본적으로 이동하는 페이지를 지정할 때 사용
-                .failureUrl("/login"); //TODO 로그인에 실패 했을 때 이동하는 페이지, 일단 기본 로그인 페이지로 적용
+                .defaultSuccessUrl("/"); // 로그인에 성공했을 때 기본적으로 이동하는 페이지를 지정할 때 사용
+                //.failureUrl("/login"); //TODO 로그인에 실패 했을 때 이동하는 페이지, 일단 기본 로그인 페이지로 적용
         //TODO successHandler랑 failureHandler 해야함
 
         // 로그아웃 설정

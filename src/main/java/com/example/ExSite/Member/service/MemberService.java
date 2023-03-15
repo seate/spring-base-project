@@ -1,6 +1,8 @@
 package com.example.ExSite.Member.service;
 
 import com.example.ExSite.Member.domain.Member;
+import com.example.ExSite.Member.dto.MemberRequestDTO;
+import com.example.ExSite.Member.dto.MemberResponseDTO;
 import com.example.ExSite.Member.dto.OAuthAttributes;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -13,9 +15,9 @@ public interface MemberService extends OAuth2UserService<OAuth2UserRequest, OAut
     @Override
     OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException;
     Member saveOrUpdate(OAuthAttributes attributes);
-    Long withdraw(Member member);
-    List<Member> findMembers();
+    MemberResponseDTO withdraw(MemberRequestDTO memberRequestDTO);
 
-    Member findByUserId(String userId);
-    public Long findIdByToken(Object isToken);
+    MemberResponseDTO findByUserId(String userId);
+    Long findIdByToken(Object isToken);
+    List<MemberResponseDTO> findAll();
 }

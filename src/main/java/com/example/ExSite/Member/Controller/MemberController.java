@@ -1,107 +1,53 @@
 package com.example.ExSite.Member.Controller;
 
-import com.example.ExSite.Member.domain.Member;
-import com.example.ExSite.Member.service.MemberService;
 import com.example.ExSite.Member.domain.GeneralMember;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.example.ExSite.Member.dto.MemberRequestDTO;
+import com.example.ExSite.Member.dto.MemberResponseDTO;
+import com.example.ExSite.Member.service.MemberService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@SessionAttributes("member")
-@Controller
+@RequestMapping("/member")
+@RestController
+@RequiredArgsConstructor
 public class MemberController {
-
     private final MemberService memberService;
-    @Autowired
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
+    private final ModelMapper modelMapper;
+
+
+    //CREATE X
+
+    //DELETE
+
+    @RequestMapping(method = RequestMethod.POST, value = "/delete")
+    public ResponseEntity<MemberResponseDTO> delete(@AuthenticationPrincipal GeneralMember generalMember) {
+        MemberResponseDTO memberResponseDTO = memberService.withdraw(modelMapper.map(generalMember.getMember(), MemberRequestDTO.class));
+        return new ResponseEntity<>(memberResponseDTO, HttpStatus.OK);
     }
-
-
-
-
-    //CREATE <- OAuth2로 service단의 loadUser에서 자동으로 함
-    /*@GetMapping("/members/new")
-    public String createMemberForm(){
-        return "members/createMemberForm";
-    }
-
-    @PostMapping(value = "/members/new")
-    public String createMember(MemberForm form) {
-
-
-        Member member = new Member();
-        member.setName(form.getName());
-        member.setUserId(form.getUserId());
-        member.setPasswd(form.getPasswd());
-        memberService.saveOrUpdate(member);
-
-        return "redirect:/";
-    }*/
 
     //READ
 
-    @GetMapping(value = "/member/list")
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
-    public String list(Model model) {
-        List<Member> members = memberService.findMembers();
-        model.addAttribute("members", members);
-        return "members/memberList";
+    @RequestMapping(method = RequestMethod.GET, value = "/findByUserId")
+    public ResponseEntity<MemberResponseDTO> findByUserId(String userId) {
+        MemberResponseDTO byUserId = memberService.findByUserId(userId);
+        return new ResponseEntity<>(byUserId, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/findAll")
+    public ResponseEntity<List<MemberResponseDTO>> findAll() {
+        List<MemberResponseDTO> members = memberService.findAll();
+        return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
 
-    //UPDATE 이건 oauth 로그인이라 일단 보류
-
-    //DELETE
-    @GetMapping("/member/delete")
-    public String delete(Model model, @AuthenticationPrincipal GeneralMember generalmember){
-        memberService.withdraw(generalmember.getMember());
-        return "redirect:/";
-    }
-
-
-
-
-    /*
-    @GetMapping("/members/memberLogin")
-    public String loginForm(){ return "members/memberLogin"; }
-
-
-    @PostMapping(value = "/members/memberLogin")
-    public String login(MemberForm form, Model model) {
-        Optional<Member> loginMember = memberServiceImplement.login(form.getUserId(), form.getPasswd());
-
-        if(loginMember.isPresent()){ //로그인 성공
-            model.addAttribute("member", loginMember.get());
-            return "redirect:/";
-        }
-        else return "members/memberLogin"; //로그인 실패
-    }
-    */
-
-    /*
-    @GetMapping("/members/memberPasswordChange")
-    public String passwordChangeForm(){ return "members/memberPasswordChange"; }
-
-    @PostMapping(value = "/members/memberPasswordChange")
-    public String passwordChange(Model model) {
-        Member member = (Member) model.getAttribute("member");
-        memberService.changePassword(member);
-        return "redirect:/";
-    }
-
-    @GetMapping("members/memberLogout")
-    public String logout(SessionStatus status){
-        status.setComplete();
-        return "redirect:/";
-    }
-    */
-
+    //UPDATE X
 
 }

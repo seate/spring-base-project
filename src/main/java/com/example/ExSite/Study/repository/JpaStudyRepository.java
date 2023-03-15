@@ -26,24 +26,26 @@ public class JpaStudyRepository implements StudyRepository {
     //DELETE
 
     @Override
-    public Optional<Study> deleteStudy(Study study) {
+    public Study deleteStudy(Study study) {
         Optional<Study> findStudy = findById(study.getId());
-        findStudy.ifPresent(study1 -> em.remove(study1));
+        if (findStudy.isEmpty()) throw new RuntimeException("지우려는 study가 없습니다.");
 
-        return findStudy;
+        em.remove(findStudy.get());
+        return findStudy.get();
     }
 
     //READ
 
     @Override
     public Optional<Study> findById(long id) {
-        Study study = em.find(Study.class, id);
-        return Optional.ofNullable(study);
+        return Optional.ofNullable(em.find(Study.class, id));
     }
 
+    @Override
     public List<Study> findByName(String keyword) {
         return em.createQuery("select s from Study s where s.name like concat('%', :keyword, '%') ", Study.class)
-                .setParameter("keyword", keyword).getResultList();
+                .setParameter("keyword", keyword)
+                .getResultList();
     }
 
 
@@ -53,7 +55,10 @@ public class JpaStudyRepository implements StudyRepository {
     }
 
 
+
+
     //UPDATE
+    @Override
     public void updateStudy(Study study) {
         em.createQuery("update Study set name = :name, curUserCount = :curUserCount," +
                 "maxUserCount = maxUserCount, goal = :goal, details = :details where id = :id")

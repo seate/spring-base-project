@@ -9,6 +9,8 @@ import com.example.ExSite.Study.repository.JpaStudyRepository;
 import com.example.ExSite.Study.repository.StudyRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,14 @@ public class SpringConfig {
     public EntityManager entityManager(){
         return em;
     }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        return modelMapper;
+    }
+
 
     @Bean
     public MemberRepository memberRepository() {

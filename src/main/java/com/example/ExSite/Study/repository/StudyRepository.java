@@ -9,7 +9,7 @@ public interface StudyRepository {
     //create
     void saveStudy(Study study);
     //delete
-    Optional<Study> deleteStudy(Study study);
+    Study deleteStudy(Study study);
 
     //read
     Optional<Study> findById(long id);

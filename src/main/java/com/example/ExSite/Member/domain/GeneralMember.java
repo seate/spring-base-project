@@ -1,23 +1,22 @@
 package com.example.ExSite.Member.domain;
 
-import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-@Getter
 public class GeneralMember implements OAuth2User, UserDetails {
 
     private Member member;
-    private Role role;
     private Map<String, Object> oauthUserAttributes;
 
     //생성자를 private로 지정하고 public인 create 2가지를 통해 생성하는 방식
     private GeneralMember(Member member, Map<String, Object> oauthUserAttributes) {
         this.member = member;
-        this.role = member.getRole();
         this.oauthUserAttributes = oauthUserAttributes;
     }
 
@@ -43,6 +42,10 @@ public class GeneralMember implements OAuth2User, UserDetails {
         });
 
         return collection;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     @Override

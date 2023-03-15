@@ -40,6 +40,6 @@ public class StompInterceptor implements ChannelInterceptor {
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) accessor.getUser();
         Member member = ((GeneralMember) token.getPrincipal()).getMember();
 
-        return studyService.isContained(studyId, member);
+        return studyService.isContained(studyId, member.getId());
     }
 }

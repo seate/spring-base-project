@@ -48,9 +48,9 @@ public class Study extends BaseTimeEntity {
 
 
     @Builder
-    public Study(String name, int maxUserCount, String goal, String details, Member leader) {
+    public Study(String name, int curUserCount, int maxUserCount, String goal, String details, Member leader) {
         this.name = name;
-        this.curUserCount = 0;
+        this.curUserCount = curUserCount;
         this.maxUserCount = maxUserCount;
         this.goal = goal;
         this.details = details;

@@ -2,15 +2,17 @@ package com.example.ExSite.Member.service;
 
 import com.example.ExSite.Member.domain.GeneralMember;
 import com.example.ExSite.Member.domain.Member;
+import com.example.ExSite.Member.dto.MemberRequestDTO;
+import com.example.ExSite.Member.dto.MemberResponseDTO;
 import com.example.ExSite.Member.dto.OAuthAttributes;
 import com.example.ExSite.Member.repository.MemberRepository;
 import com.example.ExSite.Study.service.StudyService;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -27,18 +29,14 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class MemberServiceImplement implements MemberService {
 
     private final MemberRepository memberRepository;
     private final StudyService studyService;
     private final HttpSession httpSession;
 
-    @Autowired
-    public MemberServiceImplement(MemberRepository memberRepository, StudyService studyService, HttpSession httpSession) {
-        this.memberRepository = memberRepository;
-        this.studyService = studyService;
-        this.httpSession = httpSession;
-    }
+
 
     //CREATE, UPDATE
 
@@ -79,6 +77,9 @@ public class MemberServiceImplement implements MemberService {
 
     @Override
     public Member saveOrUpdate(OAuthAttributes attributes){
+        Optional<Member> byUserId = memberRepository.findByUserId(attributes.getEmail());
+        if (byUserId.isEmpty()) throw new RuntimeException("찾으려는 member가 없습니다.");
+
         Member member = memberRepository.findByUserId(attributes.getEmail())
                 .map(member1 -> member1.update(attributes.getName(), attributes.getPicture()))
                 .orElse(attributes.toEntity());
@@ -89,27 +90,16 @@ public class MemberServiceImplement implements MemberService {
     //DELETE
 
     @Override
-    public Long withdraw(Member member) {
-        memberRepository.findByUserId(member.getUserId()).ifPresentOrElse(
-                member1 -> {
-                    revokeGoogleToken();
+    public MemberResponseDTO withdraw(MemberRequestDTO memberRequestDTO) {
+        if (memberRepository.findByUserId(memberRequestDTO.getUserId()).isEmpty())
+            throw new RuntimeException("삭제하려는 회원이 존재하지 않음");
 
-                    //이 멤버가 지워졌을 때의 study 등의 처리
-                    try {
-                        studyService.memberDeleted(member1);
-                    }
-                    catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+        Member member = memberRequestDTO.toEntity();
 
-                    memberRepository.delete(member1);
-                },
-                () -> {
-                    throw new IllegalStateException("삭제하려는 회원이 존재하지 않음");
-                }
-        );
-
-        return member.getId();
+        revokeGoogleToken(); //TODO kakao 토큰도 작성해야함
+        studyService.memberDeleted(memberRequestDTO); //이 멤버가 지워졌을 때의 study 등의 처리
+        memberRepository.delete(member);
+        return new MemberResponseDTO(member);
     }
 
     private void revokeGoogleToken(){
@@ -126,37 +116,28 @@ public class MemberServiceImplement implements MemberService {
 
     //READ
 
-    public Optional<Member> findOne(Long memberId){
+    /*public Optional<Member> findOne(Long memberId){
         return memberRepository.findById(memberId);
-    }
+    }*/
 
-    public Member findByUserId(String userId) {
-        Optional<Member> findMember = memberRepository.findByUserId(userId);
-        if (findMember.isEmpty()) {
-            try {
-                throw new Exception("찾으려는 member가 없습니다.");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return findMember.get();
+    public MemberResponseDTO findByUserId(String userId) {
+        Optional<Member> byUserId = memberRepository.findByUserId(userId);
+        if (byUserId.isEmpty()) throw new RuntimeException("찾으려는 member의 userId가 없습니다");
+        return new MemberResponseDTO(byUserId.get());
     }
 
     public Long findIdByToken(Object isToken) {
-        if (!(isToken instanceof OAuth2AuthenticationToken)){
-            try {
-                throw new Exception("토큰이 OAuth2토큰의 요소가 아닙니다.");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) isToken;
-        return findByUserId(token.getPrincipal().getAttribute("email")).getId();
+        if (!(isToken instanceof OAuth2AuthenticationToken)) throw new RuntimeException("토큰이 OAuth2토큰의 요소가 아닙니다.");
+        MemberResponseDTO memberResponseDTO = findByUserId(((OAuth2AuthenticationToken) isToken).getPrincipal().getAttribute("email"));
+        return memberResponseDTO.getId();
     }
 
-    public List<Member> findMembers(){
-        return memberRepository.findAll();
+    public List<MemberResponseDTO> findAll(){
+        return memberRepository.findAll().stream().map(MemberResponseDTO::new).toList();
     }
 
+    public Optional<MemberResponseDTO> findByRequestDTO(MemberRequestDTO memberRequestDTO) {
+        Optional<Member> byUserId = memberRepository.findByUserId(memberRequestDTO.getUserId());
+        return byUserId.map(MemberResponseDTO::new);
+    }
 }

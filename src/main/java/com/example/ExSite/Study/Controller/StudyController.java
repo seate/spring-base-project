@@ -1,83 +1,51 @@
 package com.example.ExSite.Study.Controller;
 
 import com.example.ExSite.Member.domain.GeneralMember;
-import com.example.ExSite.Study.domain.Study;
+import com.example.ExSite.Member.dto.MemberRequestDTO;
+import com.example.ExSite.Study.dto.StudyRequestDTO;
+import com.example.ExSite.Study.dto.StudyResponseDTO;
 import com.example.ExSite.Study.service.StudyService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/study")
+@RequiredArgsConstructor
 public class StudyController {
-
     private final StudyService studyService;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public StudyController(StudyService studyService) {
-        this.studyService = studyService;
+
+    @RequestMapping(method = RequestMethod.POST, value = "/create")
+    public ResponseEntity<StudyResponseDTO> create(@AuthenticationPrincipal GeneralMember generalMember, StudyRequestDTO studyRequestDTO) {
+        MemberRequestDTO memberRequestDTO = modelMapper.map(generalMember.getMember(), MemberRequestDTO.class);
+        StudyResponseDTO studyResponseDTO = studyService.create(memberRequestDTO, studyRequestDTO);
+        return new ResponseEntity<>(studyResponseDTO, HttpStatus.OK);
     }
 
-    //CREATE
-
-    @GetMapping("study/create")
-    public String studyCreate() {
-        return "study/studyCreate";
+    @RequestMapping(method = RequestMethod.POST, value = "/delete")
+    public ResponseEntity<StudyResponseDTO> delete(@AuthenticationPrincipal GeneralMember generalMember, StudyRequestDTO studyRequestDTO) {
+        MemberRequestDTO memberRequestDTO = modelMapper.map(generalMember.getMember(), MemberRequestDTO.class);
+        StudyResponseDTO studyResponseDTO = studyService.delete(memberRequestDTO, studyRequestDTO);
+        return new ResponseEntity<>(studyResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/study/create")
-    public String studyCreate(@AuthenticationPrincipal GeneralMember generalMember, Model model,
-                              String studyName, int maxUserCount, String goal, String details) {
-        studyService.create(studyName, maxUserCount, goal, details, generalMember.getMember());
-        return "redirect:/";
+    @RequestMapping(method = RequestMethod.GET, value ="/search")
+    public ResponseEntity<List<StudyResponseDTO>> search(@RequestParam String keyword) {
+        return new ResponseEntity<>(studyService.search(keyword), HttpStatus.OK);
     }
 
-    //DELETE
-
-    @GetMapping("/study/delete")
-    public String studyDelete(Model model) {
-        return "/study/studyDelete";
+    @RequestMapping(method = RequestMethod.GET, value = "/list")
+    public ResponseEntity<List<StudyResponseDTO>> findAll() {
+        return new ResponseEntity<>(studyService.findAll(), HttpStatus.OK);
     }
-
-    @PostMapping("/study/delete")
-    public String studyDelete(Model model, @AuthenticationPrincipal GeneralMember generalMember, long studyId) {
-        Study studyById = studyService.findById(studyId);
-        studyService.delete(generalMember.getMember(), studyById);
-
-        return "redirect:/";
-    }
-
-
-
-    //READ
-
-    @GetMapping("/study/search")
-    public String search(Model model) {
-        return "/study/studySearch";
-    }
-
-    @PostMapping("/study/search")
-    public String search(Model model, String keyword) {
-        List<Study> search = studyService.search(keyword);
-        model.addAttribute("studySearchResult", search);
-
-        return "/study/studySearchResult";
-    }
-
-
-    @GetMapping("/study/list")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String studyList(Model model) {
-        List<Study> list = studyService.list();
-        model.addAttribute("studies", list);
-
-        return "/study/studyList";
-    }
-
-    //UPDATE
 }

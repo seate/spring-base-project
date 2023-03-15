@@ -1,18 +1,19 @@
 package com.example.ExSite.Study.service;
 
-import com.example.ExSite.Member.domain.Member;
-import com.example.ExSite.Study.domain.Study;
+import com.example.ExSite.Member.dto.MemberRequestDTO;
+import com.example.ExSite.Study.dto.StudyRequestDTO;
+import com.example.ExSite.Study.dto.StudyResponseDTO;
 
 import java.util.List;
 
 public interface StudyService {
-    void create(String name, int maxUserCount, String goal, String details, Member leader);
-    void delete(Member member, Study study);
-    void memberDeleted(Member member);
-    Study findById(long id);
-    List<Study> search(String keyword);
-    boolean isContained(Long studyId, Member member);
-    List<Study> list();
+    StudyResponseDTO create(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO);
+    StudyResponseDTO delete(MemberRequestDTO isLeader, StudyRequestDTO studyRequestDTO);
+    void memberDeleted(MemberRequestDTO memberRequestDTO);
+    //Study findById(long id);
+    List<StudyResponseDTO> search(String keyword);
+    boolean isContained(Long studyId, Long memberId);
+    List<StudyResponseDTO> findAll();
 
-    void update(Study study);
+    void update(StudyRequestDTO studyRequestDTO);
 }
