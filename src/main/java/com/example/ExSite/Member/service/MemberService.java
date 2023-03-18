@@ -18,6 +18,7 @@ public interface MemberService extends OAuth2UserService<OAuth2UserRequest, OAut
     MemberResponseDTO withdraw(MemberRequestDTO memberRequestDTO);
 
     MemberResponseDTO findByUserId(String userId);
+    List<MemberResponseDTO> findByKeyword(String keyword);
     Long findIdByToken(Object isToken);
     List<MemberResponseDTO> findAll();
 }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -83,10 +82,10 @@ public class StudyServiceImplement implements StudyService {
     }
 
     public Study findById(long id) {
-        Optional<Study> studyById = studyRepository.findById(id);
-        if (studyById.isEmpty()) throw new RuntimeException("이 id의 study가 없습니다.");
+        Study studyById = studyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("이 id의 study가 없습니다."));
 
-        return studyById.get();
+        return studyById;
     }
 
     public List<StudyResponseDTO> findAll() {

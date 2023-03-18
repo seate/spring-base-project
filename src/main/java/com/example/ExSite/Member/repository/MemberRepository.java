@@ -8,10 +8,10 @@ import java.util.Optional;
 public interface MemberRepository {
     Member save(Member member);
 
-    Optional<Member> delete(Member member);
+    Member delete(Member member);
 
     //Optional<Member> findById(Long id)
-    List<Member> findByName(String name);
+    List<Member> findByKeyword(String keyword);
 
     Optional<Member> findById(Long id);
     Optional<Member> findByUserId(String userId);

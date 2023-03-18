@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -77,9 +76,6 @@ public class MemberServiceImplement implements MemberService {
 
     @Override
     public Member saveOrUpdate(OAuthAttributes attributes){
-        Optional<Member> byUserId = memberRepository.findByUserId(attributes.getEmail());
-        if (byUserId.isEmpty()) throw new RuntimeException("찾으려는 member가 없습니다.");
-
         Member member = memberRepository.findByUserId(attributes.getEmail())
                 .map(member1 -> member1.update(attributes.getName(), attributes.getPicture()))
                 .orElse(attributes.toEntity());
@@ -91,8 +87,8 @@ public class MemberServiceImplement implements MemberService {
 
     @Override
     public MemberResponseDTO withdraw(MemberRequestDTO memberRequestDTO) {
-        if (memberRepository.findByUserId(memberRequestDTO.getUserId()).isEmpty())
-            throw new RuntimeException("삭제하려는 회원이 존재하지 않음");
+        memberRepository.findByUserId(memberRequestDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("삭제하려는 회원이 존재하지 않음"));
 
         Member member = memberRequestDTO.toEntity();
 
@@ -121,9 +117,17 @@ public class MemberServiceImplement implements MemberService {
     }*/
 
     public MemberResponseDTO findByUserId(String userId) {
-        Optional<Member> byUserId = memberRepository.findByUserId(userId);
-        if (byUserId.isEmpty()) throw new RuntimeException("찾으려는 member의 userId가 없습니다");
-        return new MemberResponseDTO(byUserId.get());
+        Member byUserId = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("찾으려는 member의 userId가 없습니다"));
+
+        return new MemberResponseDTO(byUserId);
+    }
+
+    public List<MemberResponseDTO> findByKeyword(String keyword) {
+        return memberRepository
+                .findByKeyword(keyword)
+                .stream().map(MemberResponseDTO::new)
+                .toList();
     }
 
     public Long findIdByToken(Object isToken) {
@@ -134,10 +138,5 @@ public class MemberServiceImplement implements MemberService {
 
     public List<MemberResponseDTO> findAll(){
         return memberRepository.findAll().stream().map(MemberResponseDTO::new).toList();
-    }
-
-    public Optional<MemberResponseDTO> findByRequestDTO(MemberRequestDTO memberRequestDTO) {
-        Optional<Member> byUserId = memberRepository.findByUserId(memberRequestDTO.getUserId());
-        return byUserId.map(MemberResponseDTO::new);
     }
 }

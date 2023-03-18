@@ -68,6 +68,9 @@ dependencies {
 
 	// modelMapper
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.2'
+
+	//springdoc swagger 설정
+	implementation 'org.springdoc:springdoc-openapi-ui'
 }
 
 tasks.named('test') {

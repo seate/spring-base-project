@@ -27,11 +27,11 @@ public class JpaStudyRepository implements StudyRepository {
 
     @Override
     public Study deleteStudy(Study study) {
-        Optional<Study> findStudy = findById(study.getId());
-        if (findStudy.isEmpty()) throw new RuntimeException("지우려는 study가 없습니다.");
+        Study findStudy = findById(study.getId())
+                .orElseThrow(() -> new RuntimeException("지우려는 study가 없습니다."));
 
-        em.remove(findStudy.get());
-        return findStudy.get();
+        em.remove(findStudy);
+        return findStudy;
     }
 
     //READ

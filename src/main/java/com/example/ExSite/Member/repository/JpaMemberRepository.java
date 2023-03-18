@@ -1,7 +1,6 @@
 package com.example.ExSite.Member.repository;
 
 import com.example.ExSite.Member.domain.Member;
-import com.example.ExSite.Member.dto.MemberResponseDTO;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
@@ -25,11 +24,11 @@ public class JpaMemberRepository implements MemberRepository {
 
 
     @Override
-    public Optional<Member> delete(Member member) {
-        Optional<Member> byId = findById(member.getId());
-        if (byId.isEmpty()) throw new RuntimeException("찾는 member가 없습니다.");
+    public Member delete(Member member) {
+        Member byId = findById(member.getId())
+                .orElseThrow(() -> new RuntimeException("찾는 member가 없습니다."));
 
-        em.remove(byId.get());
+        em.remove(byId);
         return byId;
     }
 
@@ -44,10 +43,9 @@ public class JpaMemberRepository implements MemberRepository {
     }
 
     @Override
-    public List<Member> findByName(String name) {
-        return em.createQuery("select m from Member m where m.name = :name", Member.class)
-                .setParameter("name", name)
-                .getResultList();
+    public List<Member> findByKeyword(String keyword) {
+        return em.createQuery("select m from Member m where m.name = :keyword", Member.class)
+                .setParameter("keyword", keyword).getResultList();
     }
 
     @Override

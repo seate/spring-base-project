@@ -41,7 +41,7 @@ public class MemberToStudyService {
             if (studyRequestDTO.getCurUserCount() + 1 > studyRequestDTO.getMaxUserCount())
                 throw new RuntimeException("member가 추가되려는 study의 최대 인원보다 많습니다.");
 
-            studyRequestDTO.setCurUserCount(studyRequestDTO.getCurUserCount() + 1); //TODO 문제 이빠이
+            studyRequestDTO.setCurUserCount(studyRequestDTO.getCurUserCount() + 1);
         }
 
         memberToStudyRepository.saveMemberToStudy(memberRequestDTO, studyRequestDTO, approved);
@@ -64,17 +64,16 @@ public class MemberToStudyService {
     private StudyRequestDTO disjoinStudy(MemberRequestDTO memberRequestDTO, StudyRequestDTO studyRequestDTO, boolean approved) {
         //가입 요청을 거절: approved = false
         //가입된 member의 탈퇴: approved = true
-        Optional<MemberToStudy> byMemberAndStudy = memberToStudyRepository.findByMemberAndStudy(memberRequestDTO, studyRequestDTO, approved);
-
-        if (byMemberAndStudy.isEmpty()) throw new RuntimeException("지우려는 MemberToStudy가 없습니다.");
+        MemberToStudy byMemberAndStudy = memberToStudyRepository.findByMemberAndStudy(memberRequestDTO, studyRequestDTO, approved)
+                .orElseThrow(() -> new RuntimeException("지우려는 MemberToStudy가 없습니다."));
 
         if (approved) {
             //study의 curUserCount update
             if (studyRequestDTO.getCurUserCount() == 1) throw new RuntimeException("탈퇴하려는 study의 현재 인원이 1명입니다.");
-            studyRequestDTO.setCurUserCount(studyRequestDTO.getCurUserCount() - 1); //TODO 여기 문제 이빠이
+            studyRequestDTO.setCurUserCount(studyRequestDTO.getCurUserCount() - 1);
         }
 
-        memberToStudyRepository.deleteMemberToStudy(byMemberAndStudy.get());
+        memberToStudyRepository.deleteMemberToStudy(byMemberAndStudy);
         return studyRequestDTO;
     }
 

@@ -41,6 +41,11 @@ public class MemberController {
         return new ResponseEntity<>(byUserId, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/findByKeyword")
+    public ResponseEntity<List<MemberResponseDTO>> findByKeyword(String keyword) {
+        return new ResponseEntity<>(memberService.findByKeyword(keyword), HttpStatus.OK);
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/findAll")
     public ResponseEntity<List<MemberResponseDTO>> findAll() {
         List<MemberResponseDTO> members = memberService.findAll();
